@@ -1,6 +1,6 @@
 {% extends "auctions/layout.html" %}
 
-{% block main %}
+{% block body %}
 
     <h2>Register</h2>
 
@@ -22,11 +22,9 @@
         <div class="form-group">
             <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
         </div>
-        <input type="submit" value="Register">
+        <input class="btn btn-primary" type="submit" value="Register">
     </form>
 
-    <p>
-        Already have an account? <a href="{% url 'login' %}">Log In here.</a>
-    </p>
+    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
 
 {% endblock %}

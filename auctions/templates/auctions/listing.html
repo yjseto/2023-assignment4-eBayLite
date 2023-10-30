@@ -1,0 +1,132 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div>
+        <div>
+            {% if auction.winner is not None %}
+                {% if user == bid.user %}
+                    <h2 align="center">Highest bid, Thank you for your Purchase!</h2>
+                {% endif %}
+            {% endif %}
+            <div>
+                <div>
+                    <div>
+                        <h3>{{ auction.title }}</h3>
+                        <p>{{ auction.description }}</p>
+                    </div>
+
+                    <div>
+                        <p><b>Author: </b> {{ auction.user }}</p>
+                        <p><b>Current Bid: </b><span>
+                        ${{ bid.amount }}</span>
+                        <p>
+                            {% if auction.price %}
+                                <p><b>Price: </b>${{ auction.price }}
+                                </p>
+                            {% else %}
+                                <p><b>Price: </b>Not Specified</p>
+                            {% endif %}
+                        <p><b>Created at: </b> {{ auction.created_at }}</p>
+                        <p><b>Last Updated: </b> {{ bid.created_at }}</p>
+                        {% if auction.category %}
+                            <p><b>Category: </b> {{ auction.category | title }}</p>
+                        {% else %}
+                            <p><b>Category: </b> Not Listed.</p>
+                        {% endif %}
+
+                        {% if auction.winner is None %}
+                            <p><b>Status:</b><span> <strong>Available</strong></span>
+                            </p>
+                        {% else %}
+                            <p><b>Status:</b><span> 
+                            <strong>Sold</strong></span></p>
+                        {% endif %}
+
+                        {% if user == bid.user %}
+                            {% if auction.winner is not None %}
+                                <h5>{{ auction.bid_counter }} Bid(s) in total.
+                                    <span class="lead">Congratulations, {{ bid.user }}! 🎊</span></h5>
+                            {% else %}
+                                <h5>{{ auction.bid_counter }} Bid(s) so far.
+                                    <span class="lead">Your bid is the current bid.</span></h5>
+                            {% endif %}
+                        {% else %}
+                            <h5>{{ auction.bid_counter }} Bid(s) so far.</h5>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <img src="{{ auction.image_url }}" class="rounded pb-2"
+                         style="width: 100%; max-height: 500px; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+        <div>
+            {% if not auction.user == user %}
+                <form action="{% url 'update_bid' bid.id %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        {% if auction.winner is not None %}
+                            {% if bid.user == user %}
+                                <div>
+                                    <button disabled class="btn bg-success disabled text-light" type="submit">Winner
+                                    </button>
+                                </div>
+                                <input disabled type="number" min="{{ bid.amount }}" step="0.01" max="99999999999.99" class="form-control"
+                                       name="bid" placeholder="Your won with a bid of: ${{ bid.amount }}">
+                            {% else %}
+                                <div>
+                                    <button disabled class="btn bg-danger disabled text-light" type="submit">SOLD
+                                    </button>
+                                </div>
+                                <input disabled type="number" min="{{ bid.amount }}" step="0.01" max="99999999999.99" class="form-control"
+                                       name="bid" placeholder="Highest bid: ${{ bid.amount }}">
+                            {% endif %}
+                        {% else %}
+                            <div>
+                                <button type="submit">Bid Now!</button>
+                            </div>
+                            <input required type="number" min="{{ bid.amount }}" step="0.01" max="99999999999.99" class="form-control"
+                                   name="bid" placeholder="Current Bid: ${{ bid.amount }}">
+                        {% endif %}
+                    </div>
+                </form>
+            {% else %}
+                <form action="{% url 'close_bid' bid.id %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <div>
+                            <button class="btn btn-outline-secondary bg-danger text-light" type="submit">Close Bid
+                            </button>
+                        </div>
+                        <input disabled type="text" class="form-control"
+                               placeholder="Last bid: {{ bid.user }} (${{ bid.amount }})">
+                    </div>
+                </form>
+            {% endif %}
+
+            <h5>Comments:</h5>
+            <form action="{% url 'add_comment' auction.id %}" method="POST">
+                {% csrf_token %}
+                {{ comment_form }}
+                <input  type="submit" value="Add comment">
+            </form>
+            <hr>
+        </div>
+
+        {% for comment in comments %}
+            <div>
+                <div>
+                    <p>{{ comment.user }} - <span
+                            >{{ comment.created_at }}</span></p>
+                </div>
+                <div >
+                    <p >{{ comment.text }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments for this auction yet.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
