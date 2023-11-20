@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
@@ -183,3 +183,12 @@ def add_comment(request, id):
         return render(request, 'auctions/login.html', {
             'message': 'Must be logged in to be able to comment!'
         })
+    
+def comment_status(request, id):
+    current = AuctionListing.objects.get(pk=id)            # Get the currently selected auction
+    all_comments = Comment.objects.filter(auction=current) # Get all comments in current auction
+    status = {
+        "auction_id": id,
+        "all_comments": all_comments
+    }
+    return JsonResponse(status)
