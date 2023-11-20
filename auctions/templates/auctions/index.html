@@ -46,14 +46,35 @@
             <div><span>Status: </span>Sold</div>
         {% endif %}
 
-        {% if user.is_authenticated %}
+        {% comment %} {% if user.is_authenticated %}
             <span>Created at: {{ item.created_at }}</span>
             {% if item in user.watchlist.all %}
                 <a href="{% url 'unwatch' item.id %}"><i class="fa fa-heart"></i></a>
             {% else %}
                 <a href="{% url 'watch' item.id %}"><i class="far fa-heart"></i></a>
             {% endif %}
-        {% endif %}
+        {% endif %} {% endcomment %}
+
+        {% if user.is_authenticated %}
+    <i id="heartIcon" class="heart-btn {% if item in user.watchlist.all %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const heartIcon = document.getElementById('heartIcon');
+
+            function toggleHeart() {
+                // Toggle between 'fas fa-heart' and 'far fa-heart'
+                heartIcon.classList.toggle('fas');
+                heartIcon.classList.toggle('far');
+
+                // Add logic here to handle adding/removing the item from the watchlist (e.g., AJAX request)
+                console.log('Item toggled in watchlist');
+            }
+
+            heartIcon.addEventListener('click', toggleHeart);
+        });
+    </script>
+{% endif %}
     </div>
 </div>
 {% endfor %}
