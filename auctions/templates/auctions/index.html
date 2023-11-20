@@ -56,26 +56,41 @@
         {% endif %} {% endcomment %}
 
         {% if user.is_authenticated %}
-    <i id="heartIcon" class="heart-btn {% if item in user.watchlist.all %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
+        <a id="heartLink"  onclick="toggleHeart(event, {{ item.id }})">
 
+            {% if item in user.watchlist.all %}
+                <i id="heartIcon" class="fa fa-heart"></i>
+            {% else %}
+                <i id="heartIcon" class="far fa-heart"></i>
+            {% endif %}
+        </a>
+    {% endif %}
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        function toggleHeart(event, itenId) {
+            event.preventDefault(); 
+    
             const heartIcon = document.getElementById('heartIcon');
+    
+            // Toggle between 'fa-heart' and 'far fa-heart'
+            heartIcon.classList.toggle('fa-heart');
+            heartIcon.classList.toggle('far');
+    
+            
+            const itemId = item.id
+            const isItemInWatchlist = heartIcon.classList.contains('fa-heart');
 
-            function toggleHeart() {
-                // Toggle between 'fas fa-heart' and 'far fa-heart'
-                heartIcon.classList.toggle('fas');
-                heartIcon.classList.toggle('far');
+            if (isItemInWatchlist) {
 
-                // Add logic here to handle adding/removing the item from the watchlist (e.g., AJAX request)
-                console.log('Item toggled in watchlist');
+                console.log('Item removed from watchlist');
+            } else {
+
+                console.log('Item added to watchlist');
             }
 
-            heartIcon.addEventListener('click', toggleHeart);
-        });
+        }
     </script>
-{% endif %}
-    </div>
+</div>
 </div>
 {% endfor %}
 </div>
