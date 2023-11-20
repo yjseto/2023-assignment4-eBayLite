@@ -1,5 +1,5 @@
 from django import forms
-
+from .models import Category
 
 class AuctionListingForm(forms.Form):
     title = forms.CharField(
@@ -46,16 +46,16 @@ class AuctionListingForm(forms.Form):
         }
         )
     )
-    category = forms.CharField(
-        label='Category',
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control form-group',
-            'autocomplete': 'on',
-            'placeholder': 'Category (optional)'
-        }
+    category = forms.ModelChoiceField(
+            label='Category',
+            required=False,
+            queryset=Category.objects.all(),
+            widget=forms.Select(attrs={
+                'class' : 'form-control form-group',
+                'placeholder' : "Category (optional)",
+                'autocomplete' : 'on'
+            })
         )
-    )
     image_url = forms.URLField(
         label='Image URL',
         required=False,
@@ -74,9 +74,6 @@ class AuctionListingForm(forms.Form):
         print(amount)
         raise forms.ValidationError('Should be a number larger than zero!')
 
-    def clean_category(self):
-        category = self.cleaned_data.get('category')
-        return category.lower()
 
 
 class CommentForm(forms.Form):

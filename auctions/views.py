@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
-from .models import User, AuctionListing, Bid, Comment
+from .models import User, AuctionListing, Category, Bid, Comment
 from .forms import AuctionListingForm, CommentForm
 
 
@@ -106,6 +106,28 @@ def listing(request, id):
         'bid': bid,
         'comments': comments,
         'comment_form': CommentForm()
+    })
+
+
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        'categories' : Category.objects.all()
+    })
+
+def filterCategories(request, category):
+
+    list = []
+    for object in AuctionListing.objects.all():
+        if(str(object.category).strip() == category):
+            list.append(object)
+
+    if list:
+        auction = list
+    else:
+        auction = AuctionListing.objects.all()
+    return render(request, "auctions/category.html", {
+        'auctions' : auction,
+        'name' : category
     })
 
 

@@ -8,13 +8,20 @@ class User(AbstractUser):
     pass
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=256, unique=True)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+
 class AuctionListing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     starting_bid = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
-    category = models.CharField(max_length=100, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='auction_listing')
     image_url = models.URLField(default='https://www.bahmansport.com/media/com_store/images/empty.png')
     bid_counter = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
